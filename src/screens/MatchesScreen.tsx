@@ -24,12 +24,13 @@ type Match = {
   minute?: number;
 };
 
-type Filter = 'all' | 'upcoming' | 'finished';
+type Filter = 'all' | 'upcoming' | 'finished' | 'favorites';
 
 const filters: { key: Filter; label: string }[] = [
   { key: 'all', label: 'Все' },
   { key: 'upcoming', label: 'Предстоящие' },
   { key: 'finished', label: 'Завершённые' },
+  { key: 'favorites', label: 'Избранные' },
 ];
 
 const statusLabels: Record<MatchStatus, string> = {
@@ -82,6 +83,7 @@ export function MatchesScreen() {
   const visibleMatches = (matches ?? []).filter((match) => {
     if (filter === 'upcoming') return match.status === 'scheduled';
     if (filter === 'finished') return match.status === 'finished';
+    if (filter === 'favorites') return isFavorite(match.id);
     return true;
   });
 
@@ -165,7 +167,9 @@ export function MatchesScreen() {
           <Text style={styles.stateText}>
             {matches.length === 0
               ? 'Матчей пока нет'
-              : 'По этому фильтру матчей нет'}
+              : filter === 'favorites'
+                ? 'В избранном пока нет матчей'
+                : 'По этому фильтру матчей нет'}
           </Text>
         }
         renderItem={({ item }) => (
